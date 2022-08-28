@@ -4,6 +4,8 @@ pragma solidity ^0.8.8;
 
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
+error NotOwner();
+
 contract FundMe {
     //constant keyword is used when the variable will not change and will be initialised when it is defined
     uint256 public constant MINIMUM_USD = 50 * 1e18;
@@ -72,7 +74,21 @@ contract FundMe {
     modifier onlyOwner {
         //check that the transaction sender owns this contract
         //only the contract owner should be able to withdraw
-        require(msg.sender == i_owner, "Sender is not owner");
+        // require(msg.sender == i_owner, "Sender is not owner");
+        if(msg.sender != i_owner){
+            revert NotOwner();
+        }
         _;
+    }
+
+    //if someone sends the contract ETH without calling fund(), either receive() or fallback() is called by default depending on whether msg.data has a value
+    //if msg.data is empty, receive() is called
+    //if msg.data is not empty or if msg.data is empty and receive() is undefined, fallback() is called
+    //having them call fund() is a failsafe
+    receive() external payable{
+        fund();
+    }
+    fallback() external payable{
+        fund();
     }
 }
