@@ -12,7 +12,7 @@ contract FundMe {
 
     address[] public funders;
 
-    //immutable keyword is used when the variable will not change and will not be initialised when it is defined
+    //immutable keyword is used when the variable will not change and will not be initialised when it is defined in the constructor
     address public immutable i_owner;
 
     constructor(){
