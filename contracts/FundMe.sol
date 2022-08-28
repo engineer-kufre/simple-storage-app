@@ -43,10 +43,8 @@ contract FundMe {
         return ethAmountInUsd;
     }
 
-    function withdraw() public {
-        //check that the transaction sender owns this contract
-        //only the contract owner should be abke to withdraw
-        require(msg.sender == owner, "Sender is not owner");
+    function withdraw() public onlyOwner {
+        
 
         for(uint256 funderIndex = 0; funderIndex < funders.length; funderIndex++) {
             address funder = funders[funderIndex];
@@ -70,5 +68,15 @@ contract FundMe {
         //this is the recommened way of sending currency tokens
         (bool callSuccess, ) = payable(msg.sender).call{value: address(this).balance}("");
         require(callSuccess, "Send failed");
+    }
+
+    //modifier is used to modify a function's behaviour. It runs before the function runs
+    //the _ line means run the code in the function decorated with the modifier.
+    //if the _ line comes first in the modifier, the code in the function decorated with the modifier will run before the modifier code
+    modifier onlyOwner {
+        //check that the transaction sender owns this contract
+        //only the contract owner should be able to withdraw
+        require(msg.sender == owner, "Sender is not owner");
+        _;
     }
 }
