@@ -9,6 +9,13 @@ contract FundMe {
 
     address[] public funders;
 
+    address public owner;
+
+    constructor(){
+        //set sender as the owner of this contract immediately it is instantiated
+        owner = msg.sender;
+    }
+
     //payable keyword is used to make a function payable
     function fund() public payable {
         //require keyword is used to set a condition
@@ -36,5 +43,32 @@ contract FundMe {
         return ethAmountInUsd;
     }
 
-    function withdraw() public {}
+    function withdraw() public {
+        //check that the transaction sender owns this contract
+        //only the contract owner should be abke to withdraw
+        require(msg.sender == owner, "Sender is not owner");
+
+        for(uint256 funderIndex = 0; funderIndex < funders.length; funderIndex++) {
+            address funder = funders[funderIndex];
+        }
+
+        //reset funders array
+        funders = new address[](0);
+
+        //there are 3 ways to send ETH: transfer, send and call
+        //transfer
+        // payable(msg.sender).transfer(address(this).balance);
+
+        //send
+        //as send function returns a boolean, if the transaction fails,it will not revert. 
+        //so we use require so it reverts all transactions when sendSuccess is false
+        // bool sendSuccess = payable(msg.sender).send(address(this).balance);
+        // require(sendSuccess, "Send failed");
+
+        //call
+        //call allows you call any ETH function without an ABI
+        //this is the recommened way of sending currency tokens
+        (bool callSuccess, ) = payable(msg.sender).call{value: address(this).balance}("");
+        require(callSuccess, "Send failed");
+    }
 }
