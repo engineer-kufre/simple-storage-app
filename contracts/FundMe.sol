@@ -5,15 +5,17 @@ pragma solidity ^0.8.8;
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 contract FundMe {
-    uint256 public minimumUsd = 50 * 1e18;
+    //constant keyword is used when the variable will not change and will be initialised when it is defined
+    uint256 public constant MINIMUM_USD = 50 * 1e18;
 
     address[] public funders;
 
-    address public owner;
+    //immutable keyword is used when the variable will not change and will not be initialised when it is defined
+    address public immutable i_owner;
 
     constructor(){
         //set sender as the owner of this contract immediately it is instantiated
-        owner = msg.sender;
+        i_owner = msg.sender;
     }
 
     //payable keyword is used to make a function payable
@@ -21,7 +23,7 @@ contract FundMe {
         //require keyword is used to set a condition
         //in this case, a minimum fund amount 
         //1e18 == 1 * 10 ** 18 == 1000000000000000000 wei == 1 Eth
-        require(getConversionRate(msg.value) >= minimumUsd, "Didn't send enough");
+        require(getConversionRate(msg.value) >= MINIMUM_USD, "Didn't send enough");
         funders.push(msg.sender);
     }
 
@@ -70,7 +72,7 @@ contract FundMe {
     modifier onlyOwner {
         //check that the transaction sender owns this contract
         //only the contract owner should be able to withdraw
-        require(msg.sender == owner, "Sender is not owner");
+        require(msg.sender == i_owner, "Sender is not owner");
         _;
     }
 }
